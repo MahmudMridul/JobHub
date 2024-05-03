@@ -1,0 +1,7 @@
+#ui
+jobhub-ui/node_modules/*
+
+#api
+jobhub-api/.vs/*
+jobhub-api/bin/*
+jobhub-api/obj/*
