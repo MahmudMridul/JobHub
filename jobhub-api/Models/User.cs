@@ -1,8 +1,14 @@
-﻿namespace jobhub_api.Models
+﻿
+
+namespace jobhub_api.Models
 {
     public class User
     {
-        public int ID { get; set; }
+        public required int ID { get; set; }
         public required string Name { get; set; }
+        public required string Email { get; set; }
+        public required string Password { get; set; }
+        //Relation with Role
+        public required Role Role { get; set; }
     }
 }
