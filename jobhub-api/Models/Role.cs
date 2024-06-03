@@ -1,6 +1,4 @@
-﻿
-
-namespace jobhub_api.Models
+﻿namespace jobhub_api.Models
 {
     public class Role
     {
