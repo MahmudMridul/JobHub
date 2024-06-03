@@ -1,4 +1,7 @@
 
+using jobhub_api.Db;
+using Microsoft.EntityFrameworkCore;
+
 namespace jobhub_api
 {
     public class Program
@@ -8,6 +11,10 @@ namespace jobhub_api
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+            // Add Db context
+            builder.Services.AddDbContext<JobHubContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
+
+            // TODO: add CORS
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
