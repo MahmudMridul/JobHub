@@ -33,13 +33,7 @@ namespace jobhub_api.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("UserID")
-                        .HasColumnType("int");
-
                     b.HasKey("ID");
-
-                    b.HasIndex("UserID")
-                        .IsUnique();
 
                     b.ToTable("Roles");
                 });
@@ -60,30 +54,33 @@ namespace jobhub_api.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Password")
+                    b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("RoleID")
+                        .HasColumnType("int");
+
+                    b.Property<byte[]>("Salt")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
                     b.HasKey("ID");
+
+                    b.HasIndex("RoleID");
 
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("jobhub_api.Models.Role", b =>
+            modelBuilder.Entity("jobhub_api.Models.User", b =>
                 {
-                    b.HasOne("jobhub_api.Models.User", "User")
-                        .WithOne("Role")
-                        .HasForeignKey("jobhub_api.Models.Role", "UserID")
+                    b.HasOne("jobhub_api.Models.Role", "Role")
+                        .WithMany()
+                        .HasForeignKey("RoleID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("jobhub_api.Models.User", b =>
-                {
-                    b.Navigation("Role")
-                        .IsRequired();
+                    b.Navigation("Role");
                 });
 #pragma warning restore 612, 618
         }
