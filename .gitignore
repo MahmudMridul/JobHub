@@ -5,3 +5,4 @@ jobhub-ui/node_modules/*
 jobhub-api/.vs/*
 jobhub-api/bin/*
 jobhub-api/obj/*
+jobhub-api/Migrations/*
