@@ -12,5 +12,6 @@ namespace jobhub_api.Models
         public required byte[] Salt { get; set; }
         //Relation with Role
         public required Role Role { get; set; }
+        public required int RoleID { get; set; }
     }
 }
