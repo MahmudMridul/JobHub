@@ -1,13 +1,13 @@
 ﻿using jobhub_api.Db;
 using jobhub_api.Models;
 using jobhub_api.Models.DTOs;
+using jobhub_api.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text;
 
 namespace jobhub_api.Controllers
@@ -33,8 +33,8 @@ namespace jobhub_api.Controllers
         {
             try
             {
-                byte[] salt = GenerateSalt();
-                string hashedPassword = HashPassword(user.Password, salt);
+                byte[] salt = PasswordUtil.GenerateSalt();
+                string hashedPassword = PasswordUtil.HashPassword(user.Password, salt);
 
                 Role? userRole = await _db.Roles.FirstOrDefaultAsync(role => role.Name == user.RoleName);
 
@@ -75,37 +75,14 @@ namespace jobhub_api.Controllers
             }
         }
 
-        private byte[] GenerateSalt(int size = 16)
-        {
-            byte[] salt = new byte[size];
-            RandomNumberGenerator.Fill(salt);
-            return salt;
-        }
+        
 
-        private string HashPassword(string password, byte[] salt)
-        {
-            using (SHA256 sha256 = SHA256.Create())
-            {
-                byte[] passwordBytes = Encoding.UTF8.GetBytes(password);
-                byte[] saltedPassword = new byte[salt.Length + passwordBytes.Length];
-
-                Buffer.BlockCopy(passwordBytes, 0, saltedPassword, 0, passwordBytes.Length);
-                Buffer.BlockCopy(salt, 0, saltedPassword, passwordBytes.Length, salt.Length);
-
-                byte[] hashedBytes = sha256.ComputeHash(saltedPassword);
-
-                byte[] hashedPasswordWithSalt = new byte[hashedBytes.Length + salt.Length];
-                Buffer.BlockCopy(salt, 0, hashedPasswordWithSalt, 0, salt.Length);
-                Buffer.BlockCopy(hashedBytes, 0, hashedPasswordWithSalt, salt.Length, hashedBytes.Length);
-
-                return Convert.ToBase64String(hashedPasswordWithSalt);
-            }
-        }
+        
 
         [HttpPost("login")]
         public async Task<ActionResult<ApiResponse>> Login(string userName, string password)
         {
-            string token = GetToken(userName);
+            string token = TokenUtil.GetToken(userName, secretKey);
             response.IsSuccess = true;
             response.Message = "Token generated";
             response.Data = token;
@@ -113,24 +90,7 @@ namespace jobhub_api.Controllers
             return Ok(response);
         }
 
-        private string GetToken(string userName)
-        {
-            JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
-            byte[] key = Encoding.ASCII.GetBytes(secretKey);
-            SecurityTokenDescriptor descriptor = new SecurityTokenDescriptor()
-            {
-                Subject = new ClaimsIdentity(
-                    new Claim[]
-                    {
-                        new Claim(ClaimTypes.Name, userName)
-                    }
-                ),
-                Expires = DateTime.UtcNow.AddMinutes(20),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
-            SecurityToken token = handler.CreateToken(descriptor);
-            return handler.WriteToken(token);
-        }
+        
         
 
         [HttpGet]
