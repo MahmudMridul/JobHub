@@ -1,12 +1,21 @@
 import { TextField } from "@mui/material";
 import React from "react";
 
-export default function JHInput({ required, label, width, mt, onChangeFunc }) {
+export default function JHInput({
+   required,
+   error,
+   label,
+   styles,
+   value,
+   onChangeFunc,
+}) {
    return (
       <TextField
          required={required}
+         error={error}
          label={label}
-         sx={{ width: width, mt: mt }}
+         sx={styles}
+         value={value}
          onChange={onChangeFunc}
       />
    );
